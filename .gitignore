@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Base de datos (no subir datos reales)
+backend/data/*.db
+backend/data/*.db-shm
+backend/data/*.db-wal
+
+# Variables de entorno (nunca subir)
+.env
+backend/.env
+frontend/.env
+
+# Build del frontend
+frontend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
