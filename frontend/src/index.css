@@ -94,8 +94,9 @@ main { flex: 1; padding: 20px 24px; }
 }
 .product-btn:active { transform: scale(0.96); }
 
-.product-name  { font-size: 0.95rem; font-weight: 600; text-align: center; line-height: 1.2; }
-.product-price { font-size: 1.05rem; color: #b07d4e; font-weight: 700; }
+.product-name        { font-size: 0.95rem; font-weight: 600; text-align: center; line-height: 1.2; }
+.product-price       { font-size: 1.05rem; color: #b07d4e; font-weight: 700; }
+.product-price-range { font-size: 0.85rem; color: #b07d4e; font-weight: 700; }
 
 /* Badge de cantidad en el botón */
 .product-badge {
@@ -155,6 +156,7 @@ main { flex: 1; padding: 20px 24px; }
 .cart-item:last-child { border-bottom: none; }
 
 .cart-item-name    { flex: 1; font-size: 0.95rem; }
+.variant-tag       { font-size: 0.8rem; color: #b07d4e; font-weight: 600; }
 
 .cart-item-controls {
   display: flex;
@@ -437,6 +439,115 @@ main { flex: 1; padding: 20px 24px; }
   font-size: 0.85rem;
   padding: 2px 10px;
   border-radius: 20px;
+}
+
+/* ─── Variant picker modal ──────────────────── */
+.variant-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.variant-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: min(340px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.variant-modal h3        { font-size: 1.2rem; font-weight: 800; text-align: center; }
+.variant-modal-sub       { text-align: center; color: #aaa; font-size: 0.9rem; }
+
+.variant-options         { display: flex; flex-direction: column; gap: 10px; }
+
+.variant-option-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f7f4f0;
+  border: 2px solid #e4ddd4;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-size: 1rem;
+}
+.variant-option-btn:hover { border-color: #b07d4e; background: #fdf6ee; }
+
+.variant-option-label { font-weight: 700; }
+.variant-option-price { font-weight: 800; color: #b07d4e; font-size: 1.05rem; }
+
+.variant-cancel {
+  background: transparent;
+  border: 1px solid #e0d9d0;
+  border-radius: 8px;
+  padding: 10px;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.12s;
+}
+.variant-cancel:hover { background: #f5f0eb; }
+
+/* ─── Variantes en Admin ────────────────────── */
+.variant-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.variant-price-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 14px;
+  background: #f7f4f0;
+  border-radius: 10px;
+}
+
+.variant-price-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.variant-price-label {
+  width: 110px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  flex-shrink: 0;
+}
+.variant-price-row input {
+  width: 100px;
+  padding: 6px 10px;
+  border: 1.5px solid #e0d9d0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+}
+.variant-price-row input:focus { border-color: #b07d4e; }
+
+.variant-chip {
+  display: inline-block;
+  background: #f0ebe3;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 /* ─── Responsive ────────────────────────── */

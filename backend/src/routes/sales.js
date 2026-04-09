@@ -22,8 +22,9 @@ router.post('/', (req, res) => {
   }
 
   const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+  // Usar unit_price del frontend si viene (variantes); sino el precio base del producto
   const total = items.reduce(
-    (sum, i) => sum + productMap[i.product_id].price * i.quantity,
+    (sum, i) => sum + (i.unit_price != null ? i.unit_price : productMap[i.product_id].price) * i.quantity,
     0
   );
 
@@ -67,7 +68,8 @@ router.post('/', (req, res) => {
       'INSERT INTO sale_items (sale_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)'
     );
     for (const item of items) {
-      insertItem.run(lastInsertRowid, item.product_id, item.quantity, productMap[item.product_id].price);
+      const unitPrice = item.unit_price != null ? item.unit_price : productMap[item.product_id].price;
+      insertItem.run(lastInsertRowid, item.product_id, item.quantity, unitPrice);
     }
 
     return lastInsertRowid;

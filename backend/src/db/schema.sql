@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS products (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   name       TEXT    NOT NULL,
   price      REAL    NOT NULL,
-  category   TEXT    DEFAULT 'bebida',
+  category   TEXT    DEFAULT 'cafe',
+  variants   TEXT,                    -- JSON: [{label, price}, ...]
   active     INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -41,11 +42,4 @@ CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(created_at);
 CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id);
 CREATE INDEX IF NOT EXISTS idx_customers_whatsapp ON customers(whatsapp);
 
--- ─── Productos por defecto (INSERT OR IGNORE = no duplicar) ───
-INSERT OR IGNORE INTO products (id, name, price, category) VALUES
-  (1, 'Espresso',        150, 'cafe'),
-  (2, 'Latte',           200, 'cafe'),
-  (3, 'Cappuccino',      200, 'cafe'),
-  (4, 'Americano',       160, 'cafe'),
-  (5, 'Medialunas x2',   120, 'comida'),
-  (6, 'Tostado',         180, 'comida');
+-- Menú se inicializa desde database.js para soportar variantes JSON
