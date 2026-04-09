@@ -56,10 +56,13 @@ router.post('/', (req, res) => {
     'INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, note) VALUES (?, ?, ?, ?, ?)'
   );
 
+  const paymentMethod = ['efectivo','tarjeta','transferencia'].includes(req.body.payment_method)
+    ? req.body.payment_method : 'efectivo';
+
   const saleId = db.transaction(() => {
     const { lastInsertRowid } = db
-      .prepare("INSERT INTO sales (customer_id, total, note, status) VALUES (?, ?, ?, 'pending')")
-      .run(customer_id, total, note?.trim() || null);
+      .prepare("INSERT INTO sales (customer_id, total, note, status, payment_method) VALUES (?, ?, ?, 'pending', ?)")
+      .run(customer_id, total, note?.trim() || null, paymentMethod);
 
     for (const item of items) {
       insertItem.run(lastInsertRowid, item.product_id, item.quantity, getPrice(item), item.note || null);
@@ -96,25 +99,60 @@ router.post('/', (req, res) => {
   res.status(201).json(saleData);
 });
 
-// GET /api/sales/today — ventas del día con detalle
+// GET /api/sales/today — ventas del día actual
 router.get('/today', (req, res) => {
   const sales = db.prepare(`
-    SELECT s.id, s.total, s.note, s.created_at,
+    SELECT s.id, s.total, s.note, s.payment_method, s.created_at,
            c.name AS customer_name, c.whatsapp AS customer_whatsapp, c.visits AS customer_visits
     FROM sales s
     LEFT JOIN customers c ON s.customer_id = c.id
-    WHERE date(s.created_at) = date('now', 'localtime')
+    WHERE date(s.created_at,'localtime') = date('now','localtime')
     ORDER BY s.created_at DESC
   `).all();
 
   const getItems = db.prepare(`
     SELECT p.name, si.quantity, si.unit_price, si.note
-    FROM sale_items si
-    JOIN products p ON si.product_id = p.id
+    FROM sale_items si JOIN products p ON si.product_id = p.id
+    WHERE si.sale_id = ?
+  `);
+  res.json(sales.map(s => ({ ...s, items: getItems.all(s.id) })));
+});
+
+// GET /api/sales/history?date=YYYY-MM-DD — ventas de una fecha específica
+router.get('/history', (req, res) => {
+  const date = req.query.date || new Date().toISOString().split('T')[0];
+
+  const sales = db.prepare(`
+    SELECT s.id, s.total, s.note, s.payment_method, s.created_at,
+           c.name AS customer_name, c.whatsapp AS customer_whatsapp
+    FROM sales s
+    LEFT JOIN customers c ON s.customer_id = c.id
+    WHERE date(s.created_at,'localtime') = ?
+    ORDER BY s.created_at DESC
+  `).all(date);
+
+  const getItems = db.prepare(`
+    SELECT p.name, si.quantity, si.unit_price, si.note
+    FROM sale_items si JOIN products p ON si.product_id = p.id
     WHERE si.sale_id = ?
   `);
 
-  res.json(sales.map(s => ({ ...s, items: getItems.all(s.id) })));
+  const withItems = sales.map(s => ({ ...s, items: getItems.all(s.id) }));
+  const METHODS   = ['efectivo', 'tarjeta', 'transferencia'];
+
+  res.json({
+    date,
+    sales: withItems,
+    summary: {
+      total:        sales.reduce((n, s) => n + s.total, 0),
+      transactions: sales.length,
+      by_payment:   METHODS.map(m => ({
+        method: m,
+        total: sales.filter(s => s.payment_method === m).reduce((n, s) => n + s.total, 0),
+        count: sales.filter(s => s.payment_method === m).length,
+      })),
+    },
+  });
 });
 
 module.exports = router;

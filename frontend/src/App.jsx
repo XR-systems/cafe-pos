@@ -3,6 +3,8 @@ import POS from './pages/POS'
 import Dashboard from './pages/Dashboard'
 import Admin from './pages/Admin'
 import Comandas from './pages/Comandas'
+import Historial from './pages/Historial'
+import Corte from './pages/Corte'
 
 export default function App() {
   const [page, setPage] = useState('pos')
@@ -21,6 +23,12 @@ export default function App() {
           <button className={page === 'dashboard' ? 'active' : ''} onClick={() => setPage('dashboard')}>
             Dashboard
           </button>
+          <button className={page === 'historial' ? 'active' : ''} onClick={() => setPage('historial')}>
+            Historial
+          </button>
+          <button className={page === 'corte'     ? 'active' : ''} onClick={() => setPage('corte')}>
+            Corte
+          </button>
           <button className={page === 'admin'     ? 'active' : ''} onClick={() => setPage('admin')}>
             Admin
           </button>
@@ -31,6 +39,8 @@ export default function App() {
         {page === 'pos'       && <POS />}
         {page === 'comandas'  && <Comandas />}
         {page === 'dashboard' && <Dashboard />}
+        {page === 'historial' && <Historial />}
+        {page === 'corte'     && <Corte />}
         {page === 'admin'     && <Admin />}
       </main>
     </div>

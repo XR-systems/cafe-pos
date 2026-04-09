@@ -17,7 +17,8 @@ db.exec(schema);
 try { db.exec('ALTER TABLE products ADD COLUMN variants TEXT'); } catch (_) {}
 try { db.exec("ALTER TABLE sales ADD COLUMN status TEXT DEFAULT 'pending'"); } catch (_) {}
 try { db.exec('ALTER TABLE sale_items ADD COLUMN note TEXT'); } catch (_) {}
-// Las tablas expenses y goals se crean via schema.sql
+try { db.exec("ALTER TABLE sales ADD COLUMN payment_method TEXT DEFAULT 'efectivo'"); } catch (_) {}
+// Las tablas expenses, goals y cash_registers se crean via schema.sql
 
 // Seed menú real si la DB está vacía o tiene datos viejos (< 20 productos)
 const { n } = db.prepare('SELECT COUNT(*) as n FROM products').get();

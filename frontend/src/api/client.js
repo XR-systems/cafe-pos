@@ -29,4 +29,7 @@ export const deleteExpense  = (id)        => request(`/expenses/${id}`,{ method:
 export const getGoals       = ()          => request('/goals');
 export const createGoal     = (body)      => request('/goals',         { method: 'POST',   body: JSON.stringify(body) });
 export const deleteGoal     = (id)        => request(`/goals/${id}`,   { method: 'DELETE' });
-export const getAnalytics   = ()          => request('/analytics');
+export const getAnalytics    = ()          => request('/analytics');
+export const getSalesHistory = (date)      => request(`/sales/history?date=${date}`);
+export const getCorte        = ()          => request('/corte');
+export const closeDay        = (body)      => request('/corte/close', { method: 'POST', body: JSON.stringify(body) });

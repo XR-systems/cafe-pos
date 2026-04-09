@@ -44,6 +44,20 @@ CREATE INDEX IF NOT EXISTS idx_customers_whatsapp ON customers(whatsapp);
 
 -- Menú se inicializa desde database.js para soportar variantes JSON
 
+CREATE TABLE IF NOT EXISTS cash_registers (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  date                TEXT    NOT NULL UNIQUE,
+  opening_cash        REAL    DEFAULT 0,
+  total_sales         REAL    DEFAULT 0,
+  sales_efectivo      REAL    DEFAULT 0,
+  sales_tarjeta       REAL    DEFAULT 0,
+  sales_transferencia REAL    DEFAULT 0,
+  total_expenses      REAL    DEFAULT 0,
+  expected_cash       REAL    DEFAULT 0,
+  notes               TEXT,
+  created_at          DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS expenses (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   description TEXT    NOT NULL,

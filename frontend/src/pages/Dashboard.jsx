@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
-import { getDashboard, getTodaySales } from '../api/client'
+import { getDashboard, getTodaySales, getCorte } from '../api/client'
 
 export default function Dashboard() {
   const [stats, setStats]   = useState(null)
   const [sales, setSales]   = useState([])
+  const [corte, setCorte]   = useState(null)
   const [loading, setLoading] = useState(true)
 
   const load = async () => {
     setLoading(true)
     try {
-      const [s, d] = await Promise.all([getDashboard(), getTodaySales()])
+      const [s, d, c] = await Promise.all([getDashboard(), getTodaySales(), getCorte()])
       setStats(s)
       setSales(d)
+      setCorte(c)
     } catch (err) {
       console.error(err)
     } finally {
@@ -52,6 +54,24 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── Métodos de pago ── */}
+      {corte && (
+        <div className="payment-breakdown">
+          {corte.by_payment.map(p => (
+            <div key={p.payment_method} className="payment-breakdown-card">
+              <div className="payment-breakdown-icon">
+                {p.payment_method === 'efectivo' ? '💵' : p.payment_method === 'tarjeta' ? '💳' : '📲'}
+              </div>
+              <div className="payment-breakdown-label">
+                {p.payment_method.charAt(0).toUpperCase() + p.payment_method.slice(1)}
+              </div>
+              <div className="payment-breakdown-total">${fmt(p.total)}</div>
+              <div className="payment-breakdown-count">{p.count} venta{p.count !== 1 ? 's' : ''}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Tabla de ventas ── */}
       <div className="sales-table-container">

@@ -21,6 +21,7 @@ app.use('/api/expenses',  require('./routes/expenses'));
 app.use('/api/goals',     require('./routes/goals'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/corte',     require('./routes/corte'));
 
 // Health check
 app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));

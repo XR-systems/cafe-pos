@@ -869,6 +869,228 @@ main { flex: 1; padding: 20px 24px; }
 .ranking-name { flex: 1; font-weight: 500; }
 .ranking-units { font-weight: 700; color: #b07d4e; white-space: nowrap; }
 
+/* ─── Método de pago (POS) ──────────────────────────────────── */
+.payment-method-selector {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.payment-btn {
+  flex: 1;
+  padding: 9px 6px;
+  border: 2px solid #e0d8ce;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.15s;
+  text-align: center;
+}
+.payment-btn:hover  { border-color: #b07d4e; color: #b07d4e; }
+.payment-btn.selected { border-color: #b07d4e; background: #b07d4e; color: white; }
+
+/* ─── Dashboard: payment breakdown ─────────────────────────── */
+.payment-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.payment-breakdown-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.payment-breakdown-icon  { font-size: 1.5rem; }
+.payment-breakdown-label { font-size: 0.8rem; color: #888; margin: 4px 0 2px; }
+.payment-breakdown-total { font-size: 1.1rem; font-weight: 700; color: #1a1a1a; }
+.payment-breakdown-count { font-size: 0.75rem; color: #aaa; }
+
+/* ─── Historial ─────────────────────────────────────────────── */
+.historial-page { max-width: 900px; margin: 0 auto; }
+
+.historial-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.hist-nav-btn {
+  background: white;
+  border: 1px solid #e0d8ce;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  transition: all 0.15s;
+}
+.hist-nav-btn:hover:not(:disabled) { background: #f5f0eb; }
+.hist-nav-btn:disabled { opacity: 0.4; cursor: default; }
+
+.historial-date-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.historial-date-picker input[type="date"] {
+  border: 1px solid #e0d8ce;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.9rem;
+  background: white;
+}
+.historial-date-label { font-size: 0.82rem; color: #888; }
+
+.historial-summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.hist-summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px 20px;
+  min-width: 120px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  flex: 1;
+}
+.hist-summary-value { font-size: 1.2rem; font-weight: 700; color: #1a1a1a; }
+.hist-summary-label { font-size: 0.78rem; color: #888; margin-top: 2px; }
+
+.historial-empty {
+  text-align: center;
+  padding: 40px;
+  color: #aaa;
+  background: white;
+  border-radius: 12px;
+}
+
+.hist-items-cell { font-size: 0.85rem; max-width: 240px; }
+.hist-sale-note  { font-size: 0.78rem; color: #999; margin-top: 2px; }
+
+/* ─── Corte de caja ─────────────────────────────────────────── */
+.corte-page { max-width: 800px; margin: 0 auto; }
+.corte-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.corte-date  { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+
+.corte-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.corte-card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.corte-card.highlight { background: #1a1a1a; color: white; }
+.corte-card-value { font-size: 1.4rem; font-weight: 700; }
+.corte-card-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+.corte-card.highlight .corte-card-label { color: rgba(255,255,255,0.6); }
+
+.corte-by-payment {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.corte-payment-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f5f0eb;
+}
+.corte-payment-row:last-child { border-bottom: none; }
+.corte-payment-icon  { font-size: 1.1rem; }
+.corte-payment-name  { flex: 1; font-weight: 600; }
+.corte-payment-count { font-size: 0.82rem; color: #888; }
+.corte-payment-total { font-weight: 700; font-size: 1rem; }
+
+.corte-closed-box {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.corte-closed-badge {
+  display: inline-block;
+  background: #43a047;
+  color: white;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.corte-close-form {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.corte-close-form h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+.corte-form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.corte-form-row label { font-size: 0.82rem; color: #888; font-weight: 600; }
+.corte-form-row input {
+  border: 1px solid #e0d8ce;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  width: 200px;
+}
+
+.corte-expected {
+  background: #f5f0eb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.corte-expected strong { font-size: 1.05rem; }
+.corte-expected-detail { font-size: 0.78rem; color: #888; }
+
+.corte-close-btn {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.corte-close-btn:hover:not(:disabled) { opacity: 0.85; }
+.corte-close-btn:disabled { opacity: 0.5; cursor: default; }
+
+.corte-history { margin-top: 8px; }
+.corte-history h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+
 /* Gastos */
 .expense-cat-badge {
   display: inline-block;
@@ -923,6 +1145,18 @@ main { flex: 1; padding: 20px 24px; }
 
   /* Comandas */
   .comandas-grid { grid-template-columns: 1fr; }
+
+  /* Corte */
+  .corte-summary-grid { grid-template-columns: 1fr 1fr; }
+  .corte-form-row input { width: 100%; }
+
+  /* Historial */
+  .historial-nav { flex-direction: column; align-items: stretch; text-align: center; }
+  .hist-nav-btn  { flex: 1; }
+  .payment-breakdown { grid-template-columns: 1fr; }
+
+  /* Payment selector */
+  .payment-method-selector { flex-direction: column; }
 
   /* Modals */
   .customizer-modal { padding: 20px 16px; }

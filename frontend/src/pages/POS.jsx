@@ -11,9 +11,10 @@ export default function POS() {
   const [products, setProducts]         = useState([])
   const [cart, setCart]                 = useState({})
   const [customizer, setCustomizer]     = useState(null)
-  const [customerName, setCustomerName] = useState('')
-  const [whatsapp, setWhatsapp]         = useState('')
-  const [orderNote, setOrderNote]       = useState('')
+  const [customerName, setCustomerName]   = useState('')
+  const [whatsapp, setWhatsapp]           = useState('')
+  const [orderNote, setOrderNote]         = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('efectivo')
   const [loading, setLoading]           = useState(false)
   const [success, setSuccess]           = useState(null)
   const [error, setError]               = useState(null)
@@ -92,12 +93,14 @@ export default function POS() {
         customer_name:     customerName.trim() || undefined,
         customer_whatsapp: whatsapp.trim()     || undefined,
         note:              orderNote.trim()     || undefined,
+        payment_method:    paymentMethod,
       })
       setSuccess(`✓ Venta #${result.sale_id} — $${result.total}`)
       setCart({})
       setCustomerName('')
       setWhatsapp('')
       setOrderNote('')
+      setPaymentMethod('efectivo')
       setTimeout(() => setSuccess(null), 4000)
     } catch (err) {
       setError(err.message)
@@ -194,6 +197,17 @@ export default function POS() {
             onChange={e => setOrderNote(e.target.value)}
             rows={2}
           />
+          <div className="payment-method-selector">
+            {['efectivo', 'tarjeta', 'transferencia'].map(m => (
+              <button
+                key={m}
+                className={`payment-btn ${paymentMethod === m ? 'selected' : ''}`}
+                onClick={() => setPaymentMethod(m)}
+              >
+                {m === 'efectivo' ? '💵 Efectivo' : m === 'tarjeta' ? '💳 Tarjeta' : '📲 Transferencia'}
+              </button>
+            ))}
+          </div>
         </div>
 
         {error   && <div className="alert error">{error}</div>}
