@@ -21,3 +21,5 @@ export const createProduct  = (body)      => request('/products',        { metho
 export const updateProduct  = (id, body)  => request(`/products/${id}`,  { method: 'PUT',    body: JSON.stringify(body) });
 export const deleteProduct  = (id)        => request(`/products/${id}`,  { method: 'DELETE' });
 export const getCustomers   = ()          => request('/customers');
+export const getOrders      = ()          => request('/orders');
+export const markOrderDone  = (id)        => request(`/orders/${id}/done`, { method: 'PATCH' });

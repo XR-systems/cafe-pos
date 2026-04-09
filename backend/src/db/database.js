@@ -13,8 +13,10 @@ db.pragma('foreign_keys = ON');
 const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 db.exec(schema);
 
-// Migración: agregar columna variants a DBs existentes
+// Migraciones para DBs existentes
 try { db.exec('ALTER TABLE products ADD COLUMN variants TEXT'); } catch (_) {}
+try { db.exec("ALTER TABLE sales ADD COLUMN status TEXT DEFAULT 'pending'"); } catch (_) {}
+try { db.exec('ALTER TABLE sale_items ADD COLUMN note TEXT'); } catch (_) {}
 
 // Seed menú real si la DB está vacía o tiene datos viejos (< 20 productos)
 const { n } = db.prepare('SELECT COUNT(*) as n FROM products').get();

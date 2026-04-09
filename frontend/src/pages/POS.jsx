@@ -3,40 +3,37 @@ import { getProducts, registerSale } from '../api/client'
 
 const CAT_ORDER = ['cafe', 'sin cafe', 'panes', 'comida']
 const CAT_NAMES = { 'cafe': 'Café', 'sin cafe': 'Bebidas sin café', 'panes': 'Panes', 'comida': 'Comida' }
-
-const fmtMoney = (n) => `$${n}`
+const DRINK_CATS = ['cafe', 'sin cafe']
+const MILK_OPTIONS  = ['Entera', 'Deslactosada', 'Light']
+const SUGAR_OPTIONS = ['Splenda', 'Refinada', 'Morena']
 
 export default function POS() {
-  const [products, setProducts]         = useState([])
-  const [cart, setCart]                 = useState({})   // key: `${id}_${variant||'base'}`
-  const [variantPicker, setVariantPicker] = useState(null) // product | null
-  const [whatsapp, setWhatsapp]         = useState('')
+  const [products, setProducts]       = useState([])
+  const [cart, setCart]               = useState({})   // key: `${id}_${variant}_${milk}_${sugar}`
+  const [customizer, setCustomizer]   = useState(null) // { product, variant, milk, sugar }
+  const [whatsapp, setWhatsapp]       = useState('')
   const [customerName, setCustomerName] = useState('')
-  const [loading, setLoading]           = useState(false)
-  const [success, setSuccess]           = useState(null)
-  const [error, setError]               = useState(null)
+  const [loading, setLoading]         = useState(false)
+  const [success, setSuccess]         = useState(null)
+  const [error, setError]             = useState(null)
 
   useEffect(() => {
     getProducts().then(setProducts).catch(() => setError('No se pudieron cargar los productos'))
   }, [])
 
   // ─── Carrito ──────────────────────────────────────────────────
-  const addToCart = (product, variant, price) => {
-    const key = `${product.id}_${variant || 'base'}`
+  const addToCart = (product, variant, milk, sugar, price) => {
+    const key = `${product.id}_${variant||''}_${milk||''}_${sugar||''}`
     setCart(prev => ({
       ...prev,
-      [key]: { key, product, variant, price, quantity: (prev[key]?.quantity || 0) + 1 }
+      [key]: { key, product, variant, milk, sugar, price, quantity: (prev[key]?.quantity || 0) + 1 }
     }))
   }
 
   const updateQty = (key, delta) => {
     setCart(prev => {
       const newQty = (prev[key]?.quantity || 0) + delta
-      if (newQty <= 0) {
-        const next = { ...prev }
-        delete next[key]
-        return next
-      }
+      if (newQty <= 0) { const next = { ...prev }; delete next[key]; return next }
       return { ...prev, [key]: { ...prev[key], quantity: newQty } }
     })
   }
@@ -44,7 +41,6 @@ export default function POS() {
   const cartItems = Object.values(cart)
   const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
 
-  // Cantidad total de un producto (sumando todas sus variantes)
   const getProductQty = (productId) =>
     Object.entries(cart)
       .filter(([k]) => k.startsWith(`${productId}_`))
@@ -52,11 +48,38 @@ export default function POS() {
 
   // ─── Click en producto ────────────────────────────────────────
   const handleProductClick = (product) => {
-    if (product.variants && product.variants.length > 0) {
-      setVariantPicker(product)
+    if (DRINK_CATS.includes(product.category)) {
+      setCustomizer({ product, variant: null, milk: null, sugar: null })
     } else {
-      addToCart(product, null, product.price)
+      addToCart(product, null, null, null, product.price)
     }
+  }
+
+  // ─── Precio seleccionado en customizer ───────────────────────
+  const custPrice = (() => {
+    if (!customizer) return null
+    const { product, variant } = customizer
+    if (product.variants?.length > 0) {
+      return product.variants.find(v => v.label === variant)?.price ?? null
+    }
+    return product.price
+  })()
+
+  const custReady = customizer
+    ? (!customizer.product.variants?.length || customizer.variant !== null)
+    : false
+
+  const handleAddFromCustomizer = () => {
+    if (!custReady) return
+    const { product, variant, milk, sugar } = customizer
+    const note = [variant, milk, sugar].filter(Boolean).join(' · ') || null
+    addToCart(product, variant, milk, sugar, custPrice)
+    // store note for later use in registerSale
+    setCart(prev => {
+      const key = `${product.id}_${variant||''}_${milk||''}_${sugar||''}`
+      return { ...prev, [key]: { ...prev[key], note } }
+    })
+    setCustomizer(null)
   }
 
   // ─── Registrar venta ──────────────────────────────────────────
@@ -64,13 +87,13 @@ export default function POS() {
     if (cartItems.length === 0 || loading) return
     setLoading(true)
     setError(null)
-
     try {
       const result = await registerSale({
         items: cartItems.map(i => ({
           product_id: i.product.id,
           quantity:   i.quantity,
           unit_price: i.price,
+          note:       i.note || null,
         })),
         customer_whatsapp: whatsapp || undefined,
         customer_name:     customerName || undefined,
@@ -100,13 +123,9 @@ export default function POS() {
             <div className="products-grid">
               {products.filter(p => p.category === cat).map(product => {
                 const qty = getProductQty(product.id)
-                const hasVariants = product.variants && product.variants.length > 0
+                const hasVariants = product.variants?.length > 0
                 return (
-                  <button
-                    key={product.id}
-                    className="product-btn"
-                    onClick={() => handleProductClick(product)}
-                  >
+                  <button key={product.id} className="product-btn" onClick={() => handleProductClick(product)}>
                     <span className="product-name">{product.name}</span>
                     {hasVariants ? (
                       <span className="product-price-range">
@@ -114,7 +133,7 @@ export default function POS() {
                         {product.variants.length > 1 && ` – $${product.variants[product.variants.length - 1].price}`}
                       </span>
                     ) : (
-                      <span className="product-price">{fmtMoney(product.price)}</span>
+                      <span className="product-price">${product.price}</span>
                     )}
                     {qty > 0 && <span className="product-badge">{qty}</span>}
                   </button>
@@ -133,20 +152,23 @@ export default function POS() {
           <p className="empty-cart">Toca un producto para agregar</p>
         ) : (
           <ul className="cart-list">
-            {cartItems.map(({ key, product, variant, price, quantity }) => (
-              <li key={key} className="cart-item">
-                <span className="cart-item-name">
-                  {product.name}
-                  {variant && <span className="variant-tag"> · {variant}</span>}
-                </span>
-                <div className="cart-item-controls">
-                  <button onClick={() => updateQty(key, -1)}>−</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => updateQty(key, +1)}>+</button>
-                </div>
-                <span className="cart-item-subtotal">${price * quantity}</span>
-              </li>
-            ))}
+            {cartItems.map(({ key, product, variant, milk, sugar, price, quantity }) => {
+              const subs = [variant, milk, sugar].filter(Boolean).join(' · ')
+              return (
+                <li key={key} className="cart-item">
+                  <div className="cart-item-info">
+                    <span className="cart-item-name">{product.name}</span>
+                    {subs && <span className="cart-item-subs">{subs}</span>}
+                  </div>
+                  <div className="cart-item-controls">
+                    <button onClick={() => updateQty(key, -1)}>−</button>
+                    <span>{quantity}</span>
+                    <button onClick={() => updateQty(key, +1)}>+</button>
+                  </div>
+                  <span className="cart-item-subtotal">${price * quantity}</span>
+                </li>
+              )
+            })}
           </ul>
         )}
 
@@ -158,7 +180,7 @@ export default function POS() {
         <div className="customer-fields">
           <input
             type="tel"
-            placeholder="WhatsApp (opcional) ej: 5211234567"
+            placeholder="WhatsApp (opcional)"
             value={whatsapp}
             onChange={e => setWhatsapp(e.target.value)}
           />
@@ -184,30 +206,74 @@ export default function POS() {
         </button>
       </section>
 
-      {/* ── Modal selector de variante ─────────────────────────── */}
-      {variantPicker && (
-        <div className="variant-overlay" onClick={() => setVariantPicker(null)}>
-          <div className="variant-modal" onClick={e => e.stopPropagation()}>
-            <h3>{variantPicker.name}</h3>
-            <p className="variant-modal-sub">¿Cómo lo quieres?</p>
-            <div className="variant-options">
-              {variantPicker.variants.map(v => (
-                <button
-                  key={v.label}
-                  className="variant-option-btn"
-                  onClick={() => {
-                    addToCart(variantPicker, v.label, v.price)
-                    setVariantPicker(null)
-                  }}
-                >
-                  <span className="variant-option-label">{v.label}</span>
-                  <span className="variant-option-price">${v.price}</span>
-                </button>
-              ))}
+      {/* ── Modal personalizador ────────────────────────────────── */}
+      {customizer && (
+        <div className="variant-overlay" onClick={() => setCustomizer(null)}>
+          <div className="customizer-modal" onClick={e => e.stopPropagation()}>
+            <h3>{customizer.product.name}</h3>
+
+            {/* Preparación (solo si tiene variantes) */}
+            {customizer.product.variants?.length > 0 && (
+              <div className="customizer-section">
+                <p className="customizer-section-title">Preparación</p>
+                <div className="customizer-chips">
+                  {customizer.product.variants.map(v => (
+                    <button
+                      key={v.label}
+                      className={`customizer-chip ${customizer.variant === v.label ? 'selected' : ''}`}
+                      onClick={() => setCustomizer(c => ({ ...c, variant: c.variant === v.label ? null : v.label }))}
+                    >
+                      {v.label}
+                      <span className="customizer-chip-price"> ${v.price}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Leche */}
+            <div className="customizer-section">
+              <p className="customizer-section-title">Leche</p>
+              <div className="customizer-chips">
+                {MILK_OPTIONS.map(m => (
+                  <button
+                    key={m}
+                    className={`customizer-chip ${customizer.milk === m ? 'selected' : ''}`}
+                    onClick={() => setCustomizer(c => ({ ...c, milk: c.milk === m ? null : m }))}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             </div>
-            <button className="variant-cancel" onClick={() => setVariantPicker(null)}>
-              Cancelar
+
+            {/* Azúcar */}
+            <div className="customizer-section">
+              <p className="customizer-section-title">Azúcar</p>
+              <div className="customizer-chips">
+                {SUGAR_OPTIONS.map(s => (
+                  <button
+                    key={s}
+                    className={`customizer-chip ${customizer.sugar === s ? 'selected' : ''}`}
+                    onClick={() => setCustomizer(c => ({ ...c, sugar: c.sugar === s ? null : s }))}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              className="customizer-add-btn"
+              onClick={handleAddFromCustomizer}
+              disabled={!custReady}
+            >
+              {custReady
+                ? `Agregar al pedido — $${custPrice}`
+                : 'Selecciona la preparación'}
             </button>
+
+            <button className="variant-cancel" onClick={() => setCustomizer(null)}>Cancelar</button>
           </div>
         </div>
       )}

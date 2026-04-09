@@ -155,8 +155,9 @@ main { flex: 1; padding: 20px 24px; }
 }
 .cart-item:last-child { border-bottom: none; }
 
-.cart-item-name    { flex: 1; font-size: 0.95rem; }
-.variant-tag       { font-size: 0.8rem; color: #b07d4e; font-weight: 600; }
+.cart-item-info    { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cart-item-name    { font-size: 0.92rem; font-weight: 600; }
+.cart-item-subs    { font-size: 0.75rem; color: #aaa; }
 
 .cart-item-controls {
   display: flex;
@@ -496,6 +497,156 @@ main { flex: 1; padding: 20px 24px; }
   transition: background 0.12s;
 }
 .variant-cancel:hover { background: #f5f0eb; }
+
+/* ─── Customizer modal (leche + azúcar + preparación) ─── */
+.customizer-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  width: min(420px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.customizer-modal h3 { font-size: 1.2rem; font-weight: 800; text-align: center; }
+
+.customizer-section { display: flex; flex-direction: column; gap: 8px; }
+.customizer-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+}
+.customizer-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.customizer-chip {
+  border: 2px solid #e4ddd4;
+  background: #f7f4f0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.12s;
+}
+.customizer-chip:hover          { border-color: #b07d4e; }
+.customizer-chip.selected       { border-color: #b07d4e; background: #fdf6ee; color: #b07d4e; font-weight: 700; }
+.customizer-chip-price          { font-size: 0.8rem; opacity: 0.8; }
+
+.customizer-add-btn {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+}
+.customizer-add-btn:hover:not(:disabled) { background: #1b5e20; }
+.customizer-add-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+/* ─── Comandas ───────────────────────────────────────────── */
+.comandas { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+.comandas-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.comandas-header h2 { font-size: 1.2rem; font-weight: 800; }
+
+.comandas-badge {
+  background: #c62828;
+  color: white;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.comandas-refresh {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: #bbb;
+}
+
+.comandas-empty {
+  text-align: center;
+  color: #bbb;
+  padding: 80px 20px;
+  font-size: 1rem;
+  background: white;
+  border-radius: 16px;
+}
+
+.comandas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.comanda-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 4px solid #b07d4e;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.comanda-card.completing { opacity: 0.4; transform: scale(0.97); }
+
+.comanda-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.comanda-num  { font-weight: 800; font-size: 1.1rem; }
+.comanda-time { color: #aaa; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+.comanda-customer { font-size: 0.85rem; color: #b07d4e; font-weight: 600; }
+
+.comanda-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #f0ebe3;
+  padding-top: 12px;
+}
+
+.comanda-item { display: flex; gap: 10px; align-items: flex-start; }
+.comanda-item-qty  { font-weight: 800; font-size: 1rem; color: #1a1a1a; min-width: 26px; }
+.comanda-item-info { display: flex; flex-direction: column; gap: 2px; }
+.comanda-item-name { font-weight: 600; font-size: 0.95rem; }
+.comanda-item-note { font-size: 0.78rem; color: #888; }
+
+.comanda-done-btn {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+  letter-spacing: -0.01em;
+}
+.comanda-done-btn:hover:not(:disabled) { background: #2e7d32; }
+.comanda-done-btn:disabled { background: #ddd; cursor: not-allowed; color: #aaa; }
 
 /* ─── Variantes en Admin ────────────────────── */
 .variant-toggle-label {
