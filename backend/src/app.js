@@ -7,7 +7,7 @@ const app = express();
 // En desarrollo permite todo
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL
+    ? (process.env.FRONTEND_URL || '').trim()
     : true
 }));
 app.use(express.json());
