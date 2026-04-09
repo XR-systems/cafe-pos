@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git branch:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(curl -s https://cafe-pos-production-7623.up.railway.app/api/products)"
+    ]
+  }
+}

@@ -12,8 +12,12 @@ async function request(path, options = {}) {
   return data;
 }
 
-export const getProducts  = ()       => request('/products');
-export const getDashboard = ()       => request('/dashboard');
-export const getTodaySales = ()      => request('/sales/today');
-export const registerSale = (body)   => request('/sales',    { method: 'POST', body: JSON.stringify(body) });
-export const createProduct = (body)  => request('/products', { method: 'POST', body: JSON.stringify(body) });
+export const getProducts    = ()          => request('/products');
+export const getAllProducts  = ()          => request('/products?all=true');
+export const getDashboard   = ()          => request('/dashboard');
+export const getTodaySales  = ()          => request('/sales/today');
+export const registerSale   = (body)      => request('/sales',           { method: 'POST',   body: JSON.stringify(body) });
+export const createProduct  = (body)      => request('/products',        { method: 'POST',   body: JSON.stringify(body) });
+export const updateProduct  = (id, body)  => request(`/products/${id}`,  { method: 'PUT',    body: JSON.stringify(body) });
+export const deleteProduct  = (id)        => request(`/products/${id}`,  { method: 'DELETE' });
+export const getCustomers   = ()          => request('/customers');
