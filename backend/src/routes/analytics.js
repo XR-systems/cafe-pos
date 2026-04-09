@@ -50,7 +50,19 @@ router.get('/', (req, res) => {
     return { ...goal, progress, pct };
   });
 
-  res.json({ total_sales: totalSales, total_expenses: totalExpenses, net_profit: netProfit, weekly, goals: goalsWithProgress });
+  // ── Ranking de productos más vendidos ────────────────────────
+  const topProducts = db.prepare(`
+    SELECT p.name, p.category,
+      SUM(si.quantity)                         AS units,
+      ROUND(SUM(si.quantity * si.unit_price),2) AS revenue
+    FROM sale_items si
+    JOIN products p ON si.product_id = p.id
+    GROUP BY p.id
+    ORDER BY units DESC
+    LIMIT 30
+  `).all();
+
+  res.json({ total_sales: totalSales, total_expenses: totalExpenses, net_profit: netProfit, weekly, goals: goalsWithProgress, top_products: topProducts });
 });
 
 module.exports = router;

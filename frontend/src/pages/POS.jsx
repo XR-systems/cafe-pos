@@ -3,30 +3,31 @@ import { getProducts, registerSale } from '../api/client'
 
 const CAT_ORDER = ['cafe', 'sin cafe', 'panes', 'comida']
 const CAT_NAMES = { 'cafe': 'Café', 'sin cafe': 'Bebidas sin café', 'panes': 'Panes', 'comida': 'Comida' }
-const DRINK_CATS = ['cafe', 'sin cafe']
+const DRINK_CATS  = ['cafe', 'sin cafe']
 const MILK_OPTIONS  = ['Entera', 'Deslactosada', 'Light']
 const SUGAR_OPTIONS = ['Splenda', 'Refinada', 'Morena']
 
 export default function POS() {
-  const [products, setProducts]       = useState([])
-  const [cart, setCart]               = useState({})   // key: `${id}_${variant}_${milk}_${sugar}`
-  const [customizer, setCustomizer]   = useState(null) // { product, variant, milk, sugar }
-  const [whatsapp, setWhatsapp]       = useState('')
+  const [products, setProducts]         = useState([])
+  const [cart, setCart]                 = useState({})
+  const [customizer, setCustomizer]     = useState(null)
   const [customerName, setCustomerName] = useState('')
-  const [loading, setLoading]         = useState(false)
-  const [success, setSuccess]         = useState(null)
-  const [error, setError]             = useState(null)
+  const [whatsapp, setWhatsapp]         = useState('')
+  const [orderNote, setOrderNote]       = useState('')
+  const [loading, setLoading]           = useState(false)
+  const [success, setSuccess]           = useState(null)
+  const [error, setError]               = useState(null)
 
   useEffect(() => {
     getProducts().then(setProducts).catch(() => setError('No se pudieron cargar los productos'))
   }, [])
 
   // ─── Carrito ──────────────────────────────────────────────────
-  const addToCart = (product, variant, milk, sugar, price) => {
+  const addToCart = (product, variant, milk, sugar, price, note) => {
     const key = `${product.id}_${variant||''}_${milk||''}_${sugar||''}`
     setCart(prev => ({
       ...prev,
-      [key]: { key, product, variant, milk, sugar, price, quantity: (prev[key]?.quantity || 0) + 1 }
+      [key]: { key, product, variant, milk, sugar, price, note, quantity: (prev[key]?.quantity || 0) + 1 }
     }))
   }
 
@@ -51,17 +52,15 @@ export default function POS() {
     if (DRINK_CATS.includes(product.category)) {
       setCustomizer({ product, variant: null, milk: null, sugar: null })
     } else {
-      addToCart(product, null, null, null, product.price)
+      addToCart(product, null, null, null, product.price, null)
     }
   }
 
-  // ─── Precio seleccionado en customizer ───────────────────────
   const custPrice = (() => {
     if (!customizer) return null
     const { product, variant } = customizer
-    if (product.variants?.length > 0) {
+    if (product.variants?.length > 0)
       return product.variants.find(v => v.label === variant)?.price ?? null
-    }
     return product.price
   })()
 
@@ -72,13 +71,8 @@ export default function POS() {
   const handleAddFromCustomizer = () => {
     if (!custReady) return
     const { product, variant, milk, sugar } = customizer
-    const note = [variant, milk, sugar].filter(Boolean).join(' · ') || null
-    addToCart(product, variant, milk, sugar, custPrice)
-    // store note for later use in registerSale
-    setCart(prev => {
-      const key = `${product.id}_${variant||''}_${milk||''}_${sugar||''}`
-      return { ...prev, [key]: { ...prev[key], note } }
-    })
+    const itemNote = [variant, milk, sugar].filter(Boolean).join(' · ') || null
+    addToCart(product, variant, milk, sugar, custPrice, itemNote)
     setCustomizer(null)
   }
 
@@ -95,13 +89,15 @@ export default function POS() {
           unit_price: i.price,
           note:       i.note || null,
         })),
-        customer_whatsapp: whatsapp || undefined,
-        customer_name:     customerName || undefined,
+        customer_name:     customerName.trim() || undefined,
+        customer_whatsapp: whatsapp.trim()     || undefined,
+        note:              orderNote.trim()     || undefined,
       })
       setSuccess(`✓ Venta #${result.sale_id} — $${result.total}`)
       setCart({})
-      setWhatsapp('')
       setCustomerName('')
+      setWhatsapp('')
+      setOrderNote('')
       setTimeout(() => setSuccess(null), 4000)
     } catch (err) {
       setError(err.message)
@@ -177,21 +173,27 @@ export default function POS() {
           <span>${total}</span>
         </div>
 
+        {/* Datos del cliente y nota */}
         <div className="customer-fields">
+          <input
+            type="text"
+            placeholder="Nombre del cliente (opcional)"
+            value={customerName}
+            onChange={e => setCustomerName(e.target.value)}
+          />
           <input
             type="tel"
             placeholder="WhatsApp (opcional)"
             value={whatsapp}
             onChange={e => setWhatsapp(e.target.value)}
           />
-          {whatsapp && (
-            <input
-              type="text"
-              placeholder="Nombre del cliente (opcional)"
-              value={customerName}
-              onChange={e => setCustomerName(e.target.value)}
-            />
-          )}
+          <textarea
+            className="note-input"
+            placeholder="Nota del pedido (ej. Para llevar, sin hielo...)"
+            value={orderNote}
+            onChange={e => setOrderNote(e.target.value)}
+            rows={2}
+          />
         </div>
 
         {error   && <div className="alert error">{error}</div>}
@@ -212,7 +214,6 @@ export default function POS() {
           <div className="customizer-modal" onClick={e => e.stopPropagation()}>
             <h3>{customizer.product.name}</h3>
 
-            {/* Preparación (solo si tiene variantes) */}
             {customizer.product.variants?.length > 0 && (
               <div className="customizer-section">
                 <p className="customizer-section-title">Preparación</p>
@@ -223,61 +224,46 @@ export default function POS() {
                       className={`customizer-chip ${customizer.variant === v.label ? 'selected' : ''}`}
                       onClick={() => setCustomizer(c => ({ ...c, variant: c.variant === v.label ? null : v.label }))}
                     >
-                      {v.label}
-                      <span className="customizer-chip-price"> ${v.price}</span>
+                      {v.label}<span className="customizer-chip-price"> ${v.price}</span>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Leche */}
             <div className="customizer-section">
               <p className="customizer-section-title">Leche</p>
               <div className="customizer-chips">
                 {MILK_OPTIONS.map(m => (
-                  <button
-                    key={m}
+                  <button key={m}
                     className={`customizer-chip ${customizer.milk === m ? 'selected' : ''}`}
-                    onClick={() => setCustomizer(c => ({ ...c, milk: c.milk === m ? null : m }))}
-                  >
+                    onClick={() => setCustomizer(c => ({ ...c, milk: c.milk === m ? null : m }))}>
                     {m}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Azúcar */}
             <div className="customizer-section">
               <p className="customizer-section-title">Azúcar</p>
               <div className="customizer-chips">
                 {SUGAR_OPTIONS.map(s => (
-                  <button
-                    key={s}
+                  <button key={s}
                     className={`customizer-chip ${customizer.sugar === s ? 'selected' : ''}`}
-                    onClick={() => setCustomizer(c => ({ ...c, sugar: c.sugar === s ? null : s }))}
-                  >
+                    onClick={() => setCustomizer(c => ({ ...c, sugar: c.sugar === s ? null : s }))}>
                     {s}
                   </button>
                 ))}
               </div>
             </div>
 
-            <button
-              className="customizer-add-btn"
-              onClick={handleAddFromCustomizer}
-              disabled={!custReady}
-            >
-              {custReady
-                ? `Agregar al pedido — $${custPrice}`
-                : 'Selecciona la preparación'}
+            <button className="customizer-add-btn" onClick={handleAddFromCustomizer} disabled={!custReady}>
+              {custReady ? `Agregar al pedido — $${custPrice}` : 'Selecciona la preparación'}
             </button>
-
             <button className="variant-cancel" onClick={() => setCustomizer(null)}>Cancelar</button>
           </div>
         </div>
       )}
-
     </div>
   )
 }

@@ -4,7 +4,7 @@ const db = require('../db/database');
 // GET /api/orders — comandas pendientes con sus items
 router.get('/', (req, res) => {
   const sales = db.prepare(`
-    SELECT s.id, s.total, s.created_at, c.name AS customer_name
+    SELECT s.id, s.total, s.note AS order_note, s.created_at, c.name AS customer_name
     FROM sales s
     LEFT JOIN customers c ON s.customer_id = c.id
     WHERE s.status = 'pending'

@@ -701,6 +701,80 @@ main { flex: 1; padding: 20px 24px; }
   border-radius: 6px;
 }
 
+/* ─── Nota del pedido ───────────────────── */
+.note-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e0d9d0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  transition: border-color 0.15s;
+}
+.note-input:focus { border-color: #b07d4e; }
+
+/* ─── Slide to complete ──────────────────── */
+.slide-track {
+  position: relative;
+  background: #f0ebe3;
+  border-radius: 10px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+.slide-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, #c8f0cd, #a5d6a7);
+  border-radius: 10px;
+  transition: width 0.05s;
+  pointer-events: none;
+}
+.slide-hint {
+  position: absolute;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #aaa;
+  font-weight: 600;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+.slide-thumb {
+  position: absolute;
+  left: 4px;
+  width: 52px;
+  height: 44px;
+  background: #1a1a1a;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.slide-thumb:active { cursor: grabbing; }
+
+/* ─── Nota en comanda ────────────────────── */
+.comanda-order-note {
+  font-size: 0.82rem;
+  color: #b07d4e;
+  font-weight: 600;
+  background: #fdf6ee;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
 /* ─── Analíticas ────────────────────────── */
 .analiticas-summary {
   display: grid;
@@ -720,6 +794,15 @@ main { flex: 1; padding: 20px 24px; }
 .ana-value.green { color: #2e7d32; }
 .ana-value.red   { color: #c62828; }
 
+/* Layout gráfica + ranking */
+.chart-and-ranking {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 4px;
+}
+
 /* Gráfica de barras */
 .bar-chart {
   display: flex;
@@ -728,6 +811,7 @@ main { flex: 1; padding: 20px 24px; }
   height: 180px;
   padding-top: 8px;
 }
+.bar-chart-sm { height: 140px; }
 .bar-col {
   flex: 1;
   display: flex;
@@ -752,6 +836,38 @@ main { flex: 1; padding: 20px 24px; }
 .goal-bar-wrap { background: #f0ebe3; border-radius: 20px; height: 14px; overflow: hidden; }
 .goal-bar    { height: 100%; background: linear-gradient(90deg, #b07d4e, #d4956a); border-radius: 20px; transition: width 0.8s ease; min-width: 4px; }
 .goal-pct    { font-size: 0.78rem; color: #888; text-align: right; }
+
+/* Ranking de productos */
+.ranking-section { display: flex; flex-direction: column; gap: 10px; }
+
+.ranking-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.ranking-filter-btn {
+  background: #f0ebe3;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.ranking-filter-btn:hover  { background: #e4ddd4; }
+.ranking-filter-btn.active { background: #1a1a1a; color: white; }
+
+.ranking-list { list-style: none; display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 4px;
+  border-bottom: 1px solid #f5f0eb;
+  font-size: 0.88rem;
+}
+.ranking-item:last-child { border-bottom: none; }
+.ranking-pos  { width: 20px; font-weight: 800; color: #ccc; font-size: 0.8rem; flex-shrink: 0; }
+.ranking-name { flex: 1; font-weight: 500; }
+.ranking-units { font-weight: 700; color: #b07d4e; white-space: nowrap; }
 
 /* Gastos */
 .expense-cat-badge {
@@ -800,7 +916,9 @@ main { flex: 1; padding: 20px 24px; }
 
   /* Analíticas */
   .analiticas-summary { grid-template-columns: 1fr; }
-  .bar-chart { height: 140px; }
+  .chart-and-ranking  { grid-template-columns: 1fr; }
+  .bar-chart    { height: 140px; }
+  .bar-chart-sm { height: 120px; }
   .bar-val { font-size: 0.58rem; }
 
   /* Comandas */
