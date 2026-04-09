@@ -17,6 +17,9 @@ app.use('/api/products',  require('./routes/products'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/sales',     require('./routes/sales'));
 app.use('/api/orders',    require('./routes/orders'));
+app.use('/api/expenses',  require('./routes/expenses'));
+app.use('/api/goals',     require('./routes/goals'));
+app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
 // Health check

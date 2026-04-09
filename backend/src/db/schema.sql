@@ -43,3 +43,20 @@ CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id);
 CREATE INDEX IF NOT EXISTS idx_customers_whatsapp ON customers(whatsapp);
 
 -- Menú se inicializa desde database.js para soportar variantes JSON
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  description TEXT    NOT NULL,
+  amount      REAL    NOT NULL,
+  category    TEXT    DEFAULT 'general',
+  date        TEXT    NOT NULL DEFAULT (date('now', 'localtime')),
+  created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT    NOT NULL,
+  target      REAL    NOT NULL,
+  percentage  INTEGER NOT NULL,
+  created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -23,3 +23,10 @@ export const deleteProduct  = (id)        => request(`/products/${id}`,  { metho
 export const getCustomers   = ()          => request('/customers');
 export const getOrders      = ()          => request('/orders');
 export const markOrderDone  = (id)        => request(`/orders/${id}/done`, { method: 'PATCH' });
+export const getExpenses    = ()          => request('/expenses');
+export const createExpense  = (body)      => request('/expenses',      { method: 'POST',   body: JSON.stringify(body) });
+export const deleteExpense  = (id)        => request(`/expenses/${id}`,{ method: 'DELETE' });
+export const getGoals       = ()          => request('/goals');
+export const createGoal     = (body)      => request('/goals',         { method: 'POST',   body: JSON.stringify(body) });
+export const deleteGoal     = (id)        => request(`/goals/${id}`,   { method: 'DELETE' });
+export const getAnalytics   = ()          => request('/analytics');

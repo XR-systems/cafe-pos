@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getAllProducts, createProduct, updateProduct, deleteProduct, getCustomers } from '../api/client'
+import AdminGastos from './AdminGastos'
+import AdminAnaliticas from './AdminAnaliticas'
 
 const fmtPrice = (n) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
@@ -129,8 +131,10 @@ export default function Admin() {
   return (
     <div className="admin">
       <div className="admin-tabs">
-        <button className={tab === 'products'  ? 'active' : ''} onClick={() => setTab('products')}>Productos</button>
-        <button className={tab === 'customers' ? 'active' : ''} onClick={() => setTab('customers')}>Clientes</button>
+        <button className={tab === 'products'   ? 'active' : ''} onClick={() => setTab('products')}>Productos</button>
+        <button className={tab === 'customers'  ? 'active' : ''} onClick={() => setTab('customers')}>Clientes</button>
+        <button className={tab === 'gastos'     ? 'active' : ''} onClick={() => setTab('gastos')}>Gastos</button>
+        <button className={tab === 'analiticas' ? 'active' : ''} onClick={() => setTab('analiticas')}>Analíticas</button>
       </div>
 
       {/* ══ PRODUCTOS ══════════════════════════════════════════ */}
@@ -295,6 +299,9 @@ export default function Admin() {
           </div>
         </div>
       )}
+
+      {tab === 'gastos'     && <AdminGastos />}
+      {tab === 'analiticas' && <AdminAnaliticas />}
 
       {/* ══ CLIENTES ═══════════════════════════════════════════ */}
       {tab === 'customers' && (
